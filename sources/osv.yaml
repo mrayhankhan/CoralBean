@@ -1,0 +1,99 @@
+# OSV (Open Source Vulnerabilities) source spec for Coral.
+# API docs: https://google.github.io/osv.dev/api/
+# Public API, no authentication required.
+#
+# Table:
+#   vulnerabilities — every advisory affecting a package (POST /v1/query)
+#
+# Usage:
+#   SELECT id, summary, database_specific__severity
+#   FROM osv.vulnerabilities
+#   WHERE package_name = 'minimist' AND ecosystem = 'npm';
+
+name: osv
+version: 0.1.0
+dsl_version: 3
+backend: http
+
+inputs:
+  OSV_BASE:
+    kind: variable
+    default: https://api.osv.dev
+    hint: Base URL for the OSV API
+
+base_url: "{{input.OSV_BASE}}"
+
+test_queries:
+  - SELECT id FROM osv.vulnerabilities WHERE package_name = 'lodash' AND ecosystem = 'npm' LIMIT 1
+
+tables:
+  - name: vulnerabilities
+    description: >
+      All known vulnerabilities for a package, from the OSV database.
+      Filter on package_name (required) and ecosystem (e.g. npm, PyPI).
+    filters:
+      - name: package_name
+        required: true
+      - name: ecosystem
+    request:
+      method: POST
+      path: /v1/query
+      body:
+        - path: [package, name]
+          from: filter
+          key: package_name
+        - path: [package, ecosystem]
+          from: filter
+          key: ecosystem
+    response:
+      rows_path: [vulns]
+      row_strategy: direct
+    columns:
+      - name: package_name
+        type: Utf8
+        description: Package name queried (echoes the WHERE filter)
+      - name: ecosystem
+        type: Utf8
+        description: Ecosystem queried (echoes the WHERE filter)
+      - name: affected__package__name
+        type: Utf8
+        description: Name of the first affected package — use as the JOIN key
+        expr:
+          kind: path
+          path: [affected, "0", package, name]
+      - name: id
+        type: Utf8
+        description: OSV ID (GHSA-… or CVE-…)
+      - name: summary
+        type: Utf8
+        description: One-line summary
+      - name: details
+        type: Utf8
+        description: Full markdown description
+      - name: published
+        type: Utf8
+        description: ISO timestamp first published
+      - name: modified
+        type: Utf8
+        description: ISO timestamp last modified
+      - name: withdrawn
+        type: Utf8
+        description: ISO timestamp if withdrawn (else null)
+      - name: database_specific__severity
+        type: Utf8
+        description: Plain-text severity label (LOW/MODERATE/HIGH/CRITICAL)
+        expr:
+          kind: path
+          path: [database_specific, severity]
+      - name: aliases
+        type: Json
+        description: Array of alias IDs (CVEs, GHSAs)
+      - name: severity
+        type: Json
+        description: Array of CVSS severity score objects
+      - name: affected
+        type: Json
+        description: Array of affected package/version-range objects
+      - name: references
+        type: Json
+        description: Array of reference URL objects

@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html, body {
+  background: #0B0B0F;
+  color: #F4F4F5;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* tiny "ship in the waves" animation behind the headline */
+@keyframes drift {
+  0%   { transform: translateX(0); }
+  50%  { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+
+.drift {
+  animation: drift 6s ease-in-out infinite;
+}
+
+.scanline-mask {
+  background-image: linear-gradient(
+    transparent 0%,
+    transparent 50%,
+    rgba(255,255,255,0.02) 50%,
+    rgba(255,255,255,0.02) 100%
+  );
+  background-size: 100% 4px;
+}

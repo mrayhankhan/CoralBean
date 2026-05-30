@@ -1,0 +1,88 @@
+# npm download-counts source spec for Coral.
+# Download statistics from the public npm downloads API (api.npmjs.org).
+# Public API, no authentication required.
+#
+# This is a SEPARATE spec from npm.yaml because download counts live on a
+# different host (api.npmjs.org) than package metadata (registry.npmjs.org),
+# and a Coral source has a single base_url.
+#
+# Tables:
+#   downloads_last_month — total downloads over the trailing 30 days
+#   downloads_last_week  — total downloads over the trailing 7 days
+#
+# Usage:
+#   SELECT downloads FROM npm_downloads.downloads_last_month
+#   WHERE package_name = 'lodash';
+
+name: npm_downloads
+version: 0.1.0
+dsl_version: 3
+backend: http
+
+inputs:
+  NPM_DOWNLOADS_BASE:
+    kind: variable
+    default: https://api.npmjs.org
+    hint: Base URL for the npm download-counts API
+
+base_url: "{{input.NPM_DOWNLOADS_BASE}}"
+
+test_queries:
+  - SELECT downloads FROM npm_downloads.downloads_last_month WHERE package_name = 'lodash' LIMIT 1
+
+tables:
+  - name: downloads_last_month
+    description: >
+      Total downloads in the trailing 30 days for a package. One row per
+      package. Filter on package_name (required).
+    filters:
+      - name: package_name
+        required: true
+    request:
+      method: GET
+      path: "/downloads/point/last-month/{{filter.package_name}}"
+    response:
+      rows_path: []
+      row_strategy: direct
+    columns:
+      - name: package_name
+        type: Utf8
+        description: Package name queried (echoes the WHERE filter)
+      - name: package
+        type: Utf8
+        description: Canonical package name returned by the API
+      - name: downloads
+        type: Int64
+        description: Total downloads in the period
+      - name: start
+        type: Utf8
+        description: First day of the counted window (YYYY-MM-DD)
+      - name: end
+        type: Utf8
+        description: Last day of the counted window (YYYY-MM-DD)
+
+  - name: downloads_last_week
+    description: >
+      Total downloads in the trailing 7 days for a package. One row per
+      package. Useful for short-term trend detection.
+    filters:
+      - name: package_name
+        required: true
+    request:
+      method: GET
+      path: "/downloads/point/last-week/{{filter.package_name}}"
+    response:
+      rows_path: []
+      row_strategy: direct
+    columns:
+      - name: package_name
+        type: Utf8
+        description: Package name queried (echoes the WHERE filter)
+      - name: package
+        type: Utf8
+      - name: downloads
+        type: Int64
+      - name: start
+        type: Utf8
+      - name: end
+        type: Utf8
