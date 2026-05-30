@@ -1,7 +1,7 @@
 # Social / showcase copy — Tell the Tale
 
-Ready-to-post text for the **Tell the Tale** bounty. Replace `<video>` and
-`<blog>` with real links before posting (the repo URL is already filled in).
+Ready-to-post text for the **Tell the Tale** bounty. Replace `<video>` with the
+real demo link before posting (the repo URL and blog URL are already filled in).
 Attach the 60-second
 video and 2–3 dashboard screenshots (landing page, a 🔴 drill-down, and the
 `coral sql` terminal output).
@@ -24,7 +24,7 @@ video and 2–3 dashboard screenshots (landing page, a 🔴 drill-down, and the
 > `chalk/chalk` and it instantly flagged `color-convert` red on the real 2025
 > supply-chain CVEs. 😬
 >
-> Repo: https://github.com/mrayhankhan/CoralBean · 60-sec demo: `<video>` · build log: `<blog>`
+> Repo: https://github.com/mrayhankhan/CoralBean · 60-sec demo: `<video>` · build log: https://dev.to/m_rayhankhan_71c3f2ed50c/how-i-built-a-dependency-risk-scanner-with-coral-in-7-days-4p9
 >
 > Built with Claude Code + Coral for the Pirates of the Coral-bean hackathon. 🪸
 
@@ -61,7 +61,7 @@ video and 2–3 dashboard screenshots (landing page, a 🔴 drill-down, and the
 >
 > Demo (60s): `<video>`
 > Code (MIT): https://github.com/mrayhankhan/CoralBean
-> Build log: `<blog>`
+> Build log: https://dev.to/m_rayhankhan_71c3f2ed50c/how-i-built-a-dependency-risk-scanner-with-coral-in-7-days-4p9
 >
 > Built with Claude Code + @withcoral 🏴‍☠️ #PiratesOfTheCoralbean
 
@@ -93,7 +93,7 @@ video and 2–3 dashboard screenshots (landing page, a 🔴 drill-down, and the
 >
 > Code is MIT-licensed: https://github.com/mrayhankhan/CoralBean
 > 60-second demo: `<video>`
-> Full build log: `<blog>`
+> Full build log: https://dev.to/m_rayhankhan_71c3f2ed50c/how-i-built-a-dependency-risk-scanner-with-coral-in-7-days-4p9
 >
 > Built with Claude Code + Coral. 🏴‍☠️ #PiratesOfTheCoralbean #DevTools #SupplyChainSecurity
 

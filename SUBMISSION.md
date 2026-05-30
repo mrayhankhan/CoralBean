@@ -27,7 +27,7 @@ vulnerable **and** abandoned **and** losing users" in one shot.
 |---|---|---|---|
 | 1 | **Track 2 — Personal Agent** (main prize) | The whole app + demo video | ✅ built & verified |
 | 2 | **Chart New Waters** — Top-10 custom source specs | `sources/osv.yaml`, `sources/npm.yaml`, `sources/npm_downloads.yaml` | ✅ 3 specs, all lint + test pass |
-| 3 | **Captain's Log** — blog post | `BLOG.md` | ✅ drafted, ready to publish |
+| 3 | **Captain's Log** — blog post | `BLOG.md` → [published on Dev.to](https://dev.to/m_rayhankhan_71c3f2ed50c/how-i-built-a-dependency-risk-scanner-with-coral-in-7-days-4p9) | ✅ live |
 | 4 | **Tell the Tale** — Discord/social showcase | `DEMO.md` + `SOCIAL.md` | ✅ scripted |
 
 ---
@@ -145,10 +145,11 @@ form allows), linking the file in this repo.
 
 ## Captain's Log — blog post
 
-`BLOG.md` is a publish-ready first-person build log. Before publishing:
-- Push the repo public and replace `<repo>` links.
-- Publish on Dev.to / Hashnode / personal blog.
-- Drop the public URL into the bounty form + `#show-and-tell`.
+`BLOG.md` is a first-person build log. **Published:**
+https://dev.to/m_rayhankhan_71c3f2ed50c/how-i-built-a-dependency-risk-scanner-with-coral-in-7-days-4p9
+- ✅ Repo public, links filled in.
+- ✅ Published on Dev.to.
+- [ ] Drop the public URL into the bounty form + `#show-and-tell`.
 
 ---
 
@@ -168,7 +169,7 @@ form allows), linking the file in this repo.
 - [ ] Push repo public; fill in real links in `BLOG.md` / `SOCIAL.md`
 - [ ] Submit Track 2 project form (+ video + repo)
 - [ ] Submit all three specs via the source-spec bounty form
-- [ ] Publish `BLOG.md`; post URL
+- [x] Publish `BLOG.md`; post URL
 - [ ] Post showcase in `#show-and-tell` with screenshots
 - [ ] Cross-post on X + LinkedIn tagging Coral
 
