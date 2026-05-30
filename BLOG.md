@@ -1,6 +1,13 @@
-# How I built a dependency risk scanner with Claude Code + Coral in 7 days
+# How I built a dependency risk scanner with Coral in 7 days
 
 *— Captain's Log entry for the Pirates of the Coral-bean Hackathon.*
+
+> A quick note on tooling: I used an AI coding assistant (Claude Code) to
+> scaffold boilerplate and rubber-duck a few decisions, the way most of us use
+> Copilot now. But the architecture, the source-spec debugging, the scoring
+> rules, and every "why doesn't this column resolve" moment below were mine.
+> The interesting part of this project wasn't generating code — it was reading
+> API docs accurately and getting Coral to do something genuinely hard.
 
 ## Why this project
 
@@ -42,7 +49,7 @@ One query. Three live systems — three different hosts (`registry.npmjs.org`, `
 
 ## Day 1 — The OSV source spec
 
-OSV is a public REST API. The Coral source spec is a single YAML file. Claude Code had a working draft fast once I pointed it at the source-spec reference and the OSV docs.
+OSV is a public REST API. The Coral source spec is a single YAML file, and the skeleton came together quickly. The hard part started right after.
 
 The `vulnerabilities` table uses `POST /v1/query`. Two things bit me, and both were about *reading the response shape correctly* rather than writing YAML:
 
@@ -58,7 +65,7 @@ The `vulnerabilities` table uses `POST /v1/query`. Two things bit me, and both w
 
 2. **Array indexing uses string keys.** To lift the package name out of the `affected[]` array as a JOIN key, the path is `[affected, "0", package, name]` — `"0"` as a *string*, not an integer (the integer form fails schema validation).
 
-`coral source lint` caught my structural mistakes offline; the nested-path mistakes only showed up when I ran a real query against `lodash` and `minimist` and saw `null` columns.
+`coral source lint` caught my structural mistakes offline; the nested-path mistakes only showed up when I ran a real query against `lodash` and `minimist` and saw `null` columns. No tool tells you that — you have to diff the response against your spec by hand.
 
 ## Day 2 — The npm specs (note the plural)
 
@@ -78,7 +85,7 @@ Three columns: 🟢 healthy / 🟡 watch / 🔴 danger. Click a card → drill-d
 
 ## Day 5 — The scoring rules
 
-`lib/risk.ts` is a pure function. Easy to unit-test. Rules I landed on:
+`lib/risk.ts` is a pure function, and the scoring rules are the part I most wanted to get right by hand — this is product judgment, not codegen. Easy to unit-test. Rules I landed on:
 
 - **CVE HIGH/CRITICAL → instant danger.** No nuance needed.
 - **Stale + collapsing → danger.** Maintainer silent > 1 year AND downloads down > 30%. This is the xz-utils pattern.
@@ -91,13 +98,13 @@ The compound rule was the one that took the most reading. A package can have no 
 
 I built a transparent HTTP fallback (`lib/coral.ts` path B) so the demo doesn't break on a laptop without Coral installed. **Same data, same row shape**, just bypassing the CLI. The header shows `coral CLI` vs `direct HTTP fallback` so judges can see which path is active. The fallback is a safety net; Coral is the production engine.
 
-One subtlety: Coral's SQL engine is DataFusion, not SQLite. So `julianday()` and `json_group_array()` don't exist — the date math is `date_part('day', now() - to_timestamp(col))` and the CVE list is `array_agg(named_struct(...))`. Worth knowing before you write the query.
+One subtlety that cost me an hour: Coral's SQL engine is DataFusion, not SQLite. So `julianday()` and `json_group_array()` don't exist — the date math is `date_part('day', now() - to_timestamp(col))` and the CVE list is `array_agg(named_struct(...))`. Worth knowing before you write the query.
 
 ## What I learned
 
 **Three insights I didn't expect:**
 
-1. **The hard part of source specs isn't writing them — it's reading the API docs accurately.** Claude Code wrote the YAML in minutes. I spent far more time confirming OSV's nested field paths against real responses than authoring the spec. Every `null` column was a docs-reading miss, not a syntax error.
+1. **The hard part of source specs isn't writing them — it's reading the API docs accurately.** Scaffolding the YAML is fast (with or without an assistant). I spent far more time confirming OSV's nested field paths against real responses than authoring the spec. Every `null` column was a docs-reading miss, not a syntax error — and no tool catches those for you.
 
 2. **The cross-source JOIN really does feel like magic in the terminal.** Three completely separate systems, one result set, one query. The demo moment isn't the dashboard — it's the `coral sql` invocation. Everyone leans forward.
 
