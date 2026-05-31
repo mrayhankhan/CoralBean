@@ -37,16 +37,62 @@ interface AuditInputs {
   githubToken?: string;
 }
 
+// Per-package result cache. The signals we score on (CVEs, staleness,
+// downloads) don't change minute-to-minute, so caching for a short TTL makes
+// repeated audits of the same repo *deterministic* — the same package always
+// returns the same row within the window — and makes re-runs near-instant.
+// Keyed by package name only; `declared_range` is per-repo and re-applied on
+// each cache hit since it doesn't affect the risk score.
+interface AuditCacheEntry { row: AuditRow; expires: number; }
+const auditCache = new Map<string, AuditCacheEntry>();
+const AUDIT_TTL_MS = Number(process.env.AUDIT_CACHE_TTL_MS ?? 15 * 60_000);
+
 /**
  * Returns one AuditRow for one dependency. Internally this fans out 4-5
  * HTTP calls (or one Coral SQL invocation), then collapses the results
  * into the shape the SQL in sql/audit-query.sql would have returned.
+ *
+ * Transient failures (timeouts, 5xx, rate limits) are retried so a single
+ * flaky call doesn't silently drop a dependency and skew the report between
+ * runs. Successful results are cached so the same repo audited repeatedly
+ * yields identical numbers.
  */
 export async function auditOneDependency(inputs: AuditInputs): Promise<AuditRow> {
-  if (await isCoralAvailable()) {
-    return auditViaCoral(inputs);
+  const now = Date.now();
+  const hit = auditCache.get(inputs.packageName);
+  if (hit && hit.expires > now) {
+    return { ...hit.row, declared_range: inputs.declaredRange };
   }
-  return auditViaHttp(inputs);
+
+  const coral = await isCoralAvailable();
+  const row = await withRetry(() => (coral ? auditViaCoral(inputs) : auditViaHttp(inputs)), 4);
+
+  auditCache.set(inputs.packageName, { row, expires: now + AUDIT_TTL_MS });
+  return row;
+}
+
+/**
+ * Retry `fn` on failure with exponential backoff + jitter. Source APIs (OSV,
+ * npm) return HTTP 429 "rate limit exceeded" in bursts when we fan out, so
+ * rate-limit errors get a longer, exponentially growing wait to let the window
+ * reset; other errors get a short retry.
+ */
+async function withRetry<T>(fn: () => Promise<T>, retries: number): Promise<T> {
+  let lastErr: unknown;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (e) {
+      lastErr = e;
+      if (attempt >= retries) break;
+      const rateLimited = /rate limit|429|too many/i.test((e as Error)?.message ?? '');
+      // Rate limits: 1s, 2s, 4s, 8s. Other errors: 0.3s, 0.6s, 0.9s…
+      const base = rateLimited ? 1000 * 2 ** attempt : 300 * (attempt + 1);
+      const jitter = Math.floor(Math.random() * 250);
+      await new Promise((r) => setTimeout(r, base + jitter));
+    }
+  }
+  throw lastErr;
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -90,7 +136,7 @@ async function auditViaCoral({ packageName, declaredRange, githubToken }: AuditI
 async function runCoralSql(sql: string): Promise<Record<string, any>[]> {
   // `--format json` must precede the SQL, and `--` terminates flag parsing so
   // a query that begins with a `--` SQL comment isn't mistaken for a CLI flag.
-  const stdout = await runCommand(CORAL_BIN, ['sql', '--format', 'json', '--', sql], 30_000);
+  const stdout = await runCommand(CORAL_BIN, ['sql', '--format', 'json', '--', sql], 45_000);
   try {
     const parsed = JSON.parse(stdout);
     // `coral sql --format json` returns either {rows: [...]} or [...] depending on version.

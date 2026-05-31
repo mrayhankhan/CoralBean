@@ -2,7 +2,7 @@
 
 > Built for [Pirates of the Coral-bean Hackathon](https://withcoral.com), Track 2 (Personal Agent).
 
-Paste any GitHub repo URL. The auditor joins **three live data sources in a single Coral SQL query** and tells you which of the repo's npm dependencies are **healthy / watch / danger** — in under 20 seconds.
+Paste any GitHub repo URL. The auditor joins **three live data sources in a single Coral SQL query** and tells you which of the repo's npm dependencies are **healthy / watch / danger**. Audit time scales with the dependency count and your connection — a few seconds for a small repo, longer for a large one on a slow network — and results are cached, so re-runs are instant.
 
 The three sources, joined in `sql/audit-query.sql` (all public, all no-auth):
 
