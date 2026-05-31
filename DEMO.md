@@ -58,7 +58,7 @@ LEFT JOIN dl   ON 1 = 1"
 | 22–32 s | Click a 🔴 card → drill-down opens | *"Click any red dependency. Active CVEs with severity. Months since the last npm publish. Downloads trend. Every signal that something is wrong — in one place."* |
 | 32–45 s | Switch to terminal, paste the `coral sql` command, hit enter | *"This is what Coral runs under the hood. One SQL query, three live data sources. No ChatGPT can do this — it needs Coral's cross-source JOIN."* |
 | 45–55 s | Switch back to browser, scroll down to `CoralQueryDisplay` | *"The full query is right here in the dashboard. Three custom source specs — OSV, npm registry, npm downloads — all in `sources/`. All bounty entries."* |
-| 55–60 s | Pan to README on screen, or just stop | *"7 days, three custom source specs, one query that genuinely can't exist without Coral. That's the project. 🏴‍☠️"* |
+| 55–60 s | Pan to README on screen, or just stop | *"Three custom source specs, one query that genuinely can't exist without Coral. That's the project. 🏴‍☠️"* |
 
 ---
 

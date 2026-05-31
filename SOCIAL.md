@@ -71,9 +71,9 @@ video and 2–3 dashboard screenshots (landing page, a 🔴 drill-down, and the
 
 > **What if you could spot a supply-chain attack before the CVE drops?**
 >
-> Over a week for the Pirates of the Coral-bean hackathon I built a Dependency
+> For the Pirates of the Coral-bean hackathon I built a Dependency
 > Risk Auditor: paste a GitHub repo URL and every npm dependency is scored
-> healthy / watch / danger in about 15 seconds.
+> healthy / watch / danger in one click.
 >
 > Tools like Snyk and Dependabot catch known CVEs *after* they're published.
 > But the signals that together predict a future attack — an active advisory, a

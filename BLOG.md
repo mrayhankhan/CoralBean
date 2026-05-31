@@ -1,4 +1,4 @@
-# How I built a dependency risk scanner with Coral in 7 days
+# How I built a dependency risk scanner with Coral
 
 *— Captain's Log entry for the Pirates of the Coral-bean Hackathon.*
 
@@ -17,7 +17,7 @@ Tools like Snyk and Dependabot catch known CVEs after they're published. Nothing
 
 That three-way signal only exists if you can JOIN across **OSV** (Google's vulnerability database), the **npm registry**, and the **npm download API**. Which is exactly what Coral does.
 
-## The query that took me 6 days to earn
+## The query the whole project is built around
 
 ```sql
 WITH pkg AS (
@@ -47,7 +47,7 @@ LEFT JOIN dl_month ON 1 = 1;
 
 One query. Three live systems — three different hosts (`registry.npmjs.org`, `api.osv.dev`, `api.npmjs.org`). Zero glue code. **No ChatGPT instance on earth can run this.** Verified against `minimist`: 2 CVEs, worst severity CRITICAL, 531M downloads/month.
 
-## Day 1 — The OSV source spec
+## The OSV source spec
 
 OSV is a public REST API. The Coral source spec is a single YAML file, and the skeleton came together quickly. The hard part started right after.
 
@@ -67,7 +67,7 @@ The `vulnerabilities` table uses `POST /v1/query`. Two things bit me, and both w
 
 `coral source lint` caught my structural mistakes offline; the nested-path mistakes only showed up when I ran a real query against `lodash` and `minimist` and saw `null` columns. No tool tells you that — you have to diff the response against your spec by hand.
 
-## Day 2 — The npm specs (note the plural)
+## The npm specs (note the plural)
 
 This is where I learned the most. npm is really two APIs: `registry.npmjs.org` for package metadata and `api.npmjs.org` for download counts. My first instinct was one source spec with a per-table `base_url` override.
 
@@ -75,15 +75,15 @@ This is where I learned the most. npm is really two APIs: `registry.npmjs.org` f
 
 The other lesson: a declared `filter` must *also* be declared as a column for `WHERE package_name = ...` to resolve, and the filter value isn't echoed back automatically — so JOINs key off real returned columns (`npm.packages.name`, `downloads.package`, `osv.affected__package__name`).
 
-## Day 3 — The fan-out
+## The fan-out
 
 The auditor reads `package.json` from a GitHub raw URL, collects every dependency (including devDependencies — supply-chain attacks via dev tools are real, see event-stream), and runs the query once per dep with 6-way concurrency. `chalk/chalk` finished in ~17 seconds. `lib/concurrency.ts` is 30 lines.
 
-## Day 4 — The dashboard
+## The dashboard
 
 Three columns: 🟢 healthy / 🟡 watch / 🔴 danger. Click a card → drill-down with every signal and a direct link to the OSV record. The whole UI is in [`app/components/`](./app/components/) — three files, all client components, Tailwind for styling. GitHub maintainer-activity (last push, archived) is layered on top via the bundled `github` source when a token is present — deliberately kept *out* of the headline query so the demo runs with zero auth.
 
-## Day 5 — The scoring rules
+## The scoring rules
 
 `lib/risk.ts` is a pure function, and the scoring rules are the part I most wanted to get right by hand — this is product judgment, not codegen. Easy to unit-test. Rules I landed on:
 
@@ -94,7 +94,7 @@ Three columns: 🟢 healthy / 🟡 watch / 🔴 danger. Click a card → drill-d
 
 The compound rule was the one that took the most reading. A package can have no CVE filed yet and still be the most dangerous thing in your repo if the maintainer has gone dark.
 
-## Day 6 — The fallback path
+## The fallback path
 
 I built a transparent HTTP fallback (`lib/coral.ts` path B) so the demo doesn't break on a laptop without Coral installed. **Same data, same row shape**, just bypassing the CLI. The header shows `coral CLI` vs `direct HTTP fallback` so judges can see which path is active. The fallback is a safety net; Coral is the production engine.
 
