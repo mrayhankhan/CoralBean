@@ -49,6 +49,10 @@ function unknownDependency(name: string, range: string, reason: string): ScoredD
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+// Vercel: allow the audit to run up to 60s (Hobby max) instead of the 10s
+// default, so medium repos finish. Large repos still hit the hosted-timeout
+// notice — by design.
+export const maxDuration = 60;
 
 // Kept modest on purpose: OSV/npm return HTTP 429 when we fan out too
 // aggressively, which used to drop random dependencies and make the report
