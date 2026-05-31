@@ -66,6 +66,30 @@ cp .env.example .env.local
 # fill in GITHUB_TOKEN
 ```
 
+## Deploy (Netlify)
+
+The app deploys as a standard Next.js site. On any cloud host the `coral`
+binary isn't present, so the live site runs the **HTTP fallback path** (same
+data, labelled `direct HTTP fallback` in the header). `netlify.toml` and the
+`outputFileTracingIncludes` config (so `sql/audit-query.sql` ships with the
+function) are already set up.
+
+```bash
+npm i -g netlify-cli                       # install the CLI
+netlify login                              # authorise in the browser
+netlify init                               # create/link a Netlify site
+netlify env:set GITHUB_TOKEN <your_token>  # raises GitHub rate limit
+netlify deploy --build --prod              # build + deploy → prints your URL
+```
+
+> **Heads-up on hosted timeouts.** Netlify's synchronous functions stop at
+> ~26 s (Vercel Hobby ~60 s). A large repo audits live OSV + npm for *every*
+> dependency, so it can exceed that — the app shows a clear "the host ran out
+> of time, not the auditor" notice and suggests a smaller repo. For unlimited
+> repo sizes, run locally (`npm run dev`) or host on a long-running server
+> (Render / Railway / Fly), which can also bundle the real `coral` binary for
+> live `mode: coral`.
+
 ---
 
 ## The custom source specs (bounty entries)

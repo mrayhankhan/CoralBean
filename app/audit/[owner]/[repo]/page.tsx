@@ -15,12 +15,16 @@ export default function AuditPage() {
   const [drillDown, setDrillDown] = useState<ScoredDependency | null>(null);
   const [progress, setProgress] = useState(0);
   const [stage, setStage] = useState('Reading package.json from GitHub…');
+  const [timedOut, setTimedOut] = useState(false);
+  const [counts, setCounts] = useState<{ completed: number; total: number } | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
     let cancelled = false;
     setData(null);
     setError(null);
+    setTimedOut(false);
+    setCounts(null);
     setProgress(0);
     setStage('Reading package.json from GitHub…');
 
@@ -50,6 +54,7 @@ export default function AuditPage() {
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buf = '';
+      let gotDone = false;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -66,23 +71,38 @@ export default function AuditPage() {
 
           if (msg.type === 'meta') {
             metaSeen = true;
+            setCounts({ completed: 0, total: msg.total });
             setStage(`Scoring ${msg.total} dependencies via Coral…`);
           } else if (msg.type === 'progress') {
             // Reserve 8% for the fetch phase and ~2% for the final sort/query;
             // map real work into the 8–98 band so the bar moves with it.
             const pct = 8 + (msg.completed / msg.total) * 90;
             setProgress(pct);
+            setCounts({ completed: msg.completed, total: msg.total });
             setStage(`Scored ${msg.completed} of ${msg.total} dependencies…`);
           } else if (msg.type === 'done') {
+            gotDone = true;
             setProgress(100);
             setData(msg.response as AuditResponse);
           }
         }
       }
+
+      // Stream closed before we got the final payload — almost always the host
+      // killing the request at its function time limit, not an app failure.
+      if (!gotDone && !cancelled) setTimedOut(true);
     }
 
     run().catch((e) => {
-      if (!cancelled && e.name !== 'AbortError') setError(e.message ?? String(e));
+      if (cancelled || e.name === 'AbortError') return;
+      const msg = e?.message ?? String(e);
+      // A dropped/aborted connection (serverless timeout) surfaces as a fetch
+      // error rather than a clean app error — treat those as a timeout.
+      if (/failed to fetch|networkerror|load failed|terminated|network error|fetch failed|connection|econnreset/i.test(msg)) {
+        setTimedOut(true);
+      } else {
+        setError(msg);
+      }
     }).finally(() => {
       clearInterval(creep);
     });
@@ -118,14 +138,16 @@ export default function AuditPage() {
         <p className="mt-1 text-[var(--fg-3)]">Dependency risk report</p>
       </header>
 
-      {error && (
+      {timedOut && <TimeoutNotice counts={counts} />}
+
+      {error && !timedOut && (
         <div className="rounded-lg border border-risk-danger/40 bg-risk-danger/10 p-4 text-risk-danger">
           <p className="font-medium">Couldn&apos;t run the audit.</p>
           <p className="mt-1 text-sm">{error}</p>
         </div>
       )}
 
-      {!data && !error && <LoadingState progress={progress} stage={stage} />}
+      {!data && !error && !timedOut && <LoadingState progress={progress} stage={stage} />}
 
       {data && (
         <>
@@ -199,6 +221,30 @@ export default function AuditPage() {
         <RiskDrillDown dep={drillDown} onClose={() => setDrillDown(null)} />
       )}
     </main>
+  );
+}
+
+function TimeoutNotice({ counts }: { counts: { completed: number; total: number } | null }) {
+  return (
+    <div className="rounded-xl border border-risk-watch/40 bg-risk-watch/10 p-5">
+      <div className="flex items-center gap-2 text-risk-watch">
+        <span className="text-lg">⏳</span>
+        <p className="font-medium">The hosted demo ran out of time — that&apos;s the host, not the auditor.</p>
+      </div>
+      <p className="mt-3 text-sm text-[var(--fg-2)]">
+        {counts && counts.total > 0 && (
+          <>It scored <span className="font-medium text-[var(--fg)]">{counts.completed} of {counts.total}</span> dependencies before the request was cut off. </>
+        )}
+        This free hosting tier caps every request at about <span className="font-medium text-[var(--fg)]">26 seconds</span>, and a large repository takes longer because the auditor queries the live OSV and npm APIs for <em>every</em> dependency. That ceiling is a constraint of the serverless host — not a limitation of the project.
+      </p>
+      <ul className="mt-3 space-y-1 text-sm text-[var(--fg-2)]">
+        <li>· Try a smaller repo — e.g. <span className="font-mono text-[var(--fg)]">tj/commander.js</span> or <span className="font-mono text-[var(--fg)]">jhildenbiddle/canvas-size</span>.</li>
+        <li>· Or run it locally with <span className="font-mono text-[var(--fg)]">npm run dev</span> — no time limit there, and it handles repos of any size.</li>
+      </ul>
+      <Link href="/" className="mt-4 inline-block text-sm text-coral-400 transition hover:underline">
+        ← Try another repo
+      </Link>
+    </div>
   );
 }
 

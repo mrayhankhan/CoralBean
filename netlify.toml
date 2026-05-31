@@ -1,0 +1,12 @@
+# Netlify config for the Dependency Risk Auditor (Next.js 14 App Router).
+# The official Next.js runtime plugin turns the app's route handlers into
+# Netlify Functions. Note: synchronous functions have a ~26s execution limit,
+# so very large repos may not finish on the hosted demo — run locally (no
+# limit) for those. The `coral` CLI isn't present in the build image, so the
+# deployed site runs the transparent HTTP fallback path (same data).
+
+[build]
+  command = "npm run build"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
