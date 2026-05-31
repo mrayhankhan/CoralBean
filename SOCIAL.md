@@ -24,7 +24,7 @@ video and 2–3 dashboard screenshots (landing page, a 🔴 drill-down, and the
 > `chalk/chalk` and it instantly flagged `color-convert` red on the real 2025
 > supply-chain CVEs. 😬
 >
-> Repo: https://github.com/mrayhankhan/CoralBean · 60-sec demo: https://www.youtube.com/watch?v=uoZ1IMjZLcI · build log: https://dev.to/m_rayhankhan_71c3f2ed50c/how-i-built-a-dependency-risk-scanner-with-coral-in-7-days-4p9
+> Repo: https://github.com/mrayhankhan/CoralBean · 60-sec demo: https://www.youtube.com/watch?v=N6_6rdnuB7k · build log: https://dev.to/m_rayhankhan_71c3f2ed50c/how-i-built-a-dependency-risk-scanner-with-coral-in-7-days-4p9
 >
 > Built with Claude Code + Coral for the Pirates of the Coral-bean hackathon. 🪸
 
@@ -59,7 +59,7 @@ video and 2–3 dashboard screenshots (landing page, a 🔴 drill-down, and the
 > Ran it on chalk/chalk → instantly flagged `color-convert` 🔴 on the real 2025
 > supply-chain compromise.
 >
-> Demo (60s): https://www.youtube.com/watch?v=uoZ1IMjZLcI
+> Demo (60s): https://www.youtube.com/watch?v=N6_6rdnuB7k
 > Code (MIT): https://github.com/mrayhankhan/CoralBean
 > Build log: https://dev.to/m_rayhankhan_71c3f2ed50c/how-i-built-a-dependency-risk-scanner-with-coral-in-7-days-4p9
 >
@@ -92,7 +92,7 @@ video and 2–3 dashboard screenshots (landing page, a 🔴 drill-down, and the
 > compromise — vulnerable, and quietly drifting.
 >
 > Code is MIT-licensed: https://github.com/mrayhankhan/CoralBean
-> 60-second demo: https://www.youtube.com/watch?v=uoZ1IMjZLcI
+> 60-second demo: https://www.youtube.com/watch?v=N6_6rdnuB7k
 > Full build log: https://dev.to/m_rayhankhan_71c3f2ed50c/how-i-built-a-dependency-risk-scanner-with-coral-in-7-days-4p9
 >
 > Built with Claude Code + Coral. 🏴‍☠️ #PiratesOfTheCoralbean #DevTools #SupplyChainSecurity

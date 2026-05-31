@@ -28,7 +28,7 @@ vulnerable **and** abandoned **and** losing users" in one shot.
 | 1 | **Track 2 — Personal Agent** (main prize) | The whole app + demo video | ✅ built & verified |
 | 2 | **Chart New Waters** — Top-10 custom source specs | `sources/osv.yaml`, `sources/npm.yaml`, `sources/npm_downloads.yaml` | ✅ 3 specs, all lint + test pass |
 | 3 | **Captain's Log** — blog post | `BLOG.md` → [published on Dev.to](https://dev.to/m_rayhankhan_71c3f2ed50c/how-i-built-a-dependency-risk-scanner-with-coral-in-7-days-4p9) | ✅ live |
-| 4 | **Tell the Tale** — Discord/social showcase | `DEMO.md` + `SOCIAL.md` + [demo video](https://www.youtube.com/watch?v=uoZ1IMjZLcI) | ✅ video published |
+| 4 | **Tell the Tale** — Discord/social showcase | `DEMO.md` + `SOCIAL.md` + [demo video](https://www.youtube.com/watch?v=N6_6rdnuB7k) | ✅ video published |
 
 ---
 
@@ -155,7 +155,7 @@ https://dev.to/m_rayhankhan_71c3f2ed50c/how-i-built-a-dependency-risk-scanner-wi
 
 ## Tell the Tale — Discord / social showcase
 
-- **Demo video (published):** https://www.youtube.com/watch?v=uoZ1IMjZLcI
+- **Demo video (published):** https://www.youtube.com/watch?v=N6_6rdnuB7k
 - `DEMO.md` — video script (timed, shot-by-shot) + recovery tips.
 - `SOCIAL.md` — ready-to-post copy for Discord `#show-and-tell`, X, LinkedIn (video + blog links filled in).
 
@@ -166,7 +166,7 @@ https://dev.to/m_rayhankhan_71c3f2ed50c/how-i-built-a-dependency-risk-scanner-wi
 - [ ] `npm run coral:add` — all three specs pass
 - [ ] `npm test` — 12 green
 - [ ] `npm run build` — compiles
-- [x] Record demo video — published: https://www.youtube.com/watch?v=uoZ1IMjZLcI
+- [x] Record demo video — published: https://www.youtube.com/watch?v=N6_6rdnuB7k
 - [x] Push repo public; fill in real links in `BLOG.md` / `SOCIAL.md`
 - [ ] Submit Track 2 project form (+ video + repo)
 - [ ] Submit all three specs via the source-spec bounty form
