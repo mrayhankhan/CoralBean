@@ -38,7 +38,8 @@ The point of Coral is that the cross-source `JOIN` lives in the data layer, not 
 │   ├── risk.ts              ← Pure scoring function (unit-tested)
 │   └── risk.test.ts
 ├── scripts/install-coral.sh
-└── BLOG.md, DEMO.md, SUBMISSION.md
+├── BLOG.md
+└── docs/                     ← DEMO.md, SOCIAL.md, SUBMISSION.md
 ```
 
 ---
@@ -199,7 +200,7 @@ npm run dev               # → smoke-test against facebook/react or chalk/chalk
 
 - 🐠 **Chart New Waters** (Top-10 custom source specs) — three specs: `osv.yaml`, `npm.yaml`, `npm_downloads.yaml`
 - ⌨️ **Captain's Log** blog post — [`BLOG.md`](./BLOG.md)
-- 📦 **Tell the Tale** showcase — see [`DEMO.md`](./DEMO.md) and [`SUBMISSION.md`](./SUBMISSION.md)
+- 📦 **Tell the Tale** showcase — see [`docs/DEMO.md`](./docs/DEMO.md) and [`docs/SUBMISSION.md`](./docs/SUBMISSION.md)
 - 🧭 **Track 2 — Personal Agent** — main prize
 
 ---
