@@ -2,13 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────────────────────────────────
+   Theme tokens. Dark is the default (`:root` / `.dark`); `.light` overrides.
+   Components consume these via Tailwind arbitrary values, e.g.
+   text-[var(--fg)] / bg-[var(--surface)] — so a single class toggle on
+   <html> flips the whole UI.
+   ───────────────────────────────────────────────────────────────────────── */
 :root {
   color-scheme: dark;
+  --bg: #0B0B0F;
+  --fg: #f4f4f5;          /* primary text   (zinc-100) */
+  --fg-2: #a1a1aa;        /* secondary text (zinc-400) */
+  --fg-3: #71717a;        /* muted text     (zinc-500) */
+  --fg-4: #52525b;        /* faint text     (zinc-600) */
+  --border: #27272a;      /* zinc-800 */
+  --surface: rgba(24, 24, 27, 0.4);        /* card           (zinc-900/40) */
+  --surface-strong: rgba(24, 24, 27, 0.6); /* input / hover  (zinc-900/60) */
+  --surface-2: rgba(9, 9, 11, 0.5);        /* nested column  (zinc-950/40) */
+  --panel: #09090b;       /* solid modal / code panel (zinc-950) */
+  --skeleton: #18181b;    /* zinc-900 */
+  --skeleton-2: #27272a;  /* zinc-800 */
+  --overlay: rgba(0, 0, 0, 0.7);
 }
 
-html, body {
-  background: #0B0B0F;
-  color: #F4F4F5;
+html {
+  background: var(--bg);
+  transition: background-color 0.3s ease;
+}
+
+/* Body stays transparent so a fixed, full-bleed background video (loading
+   state) can show through from behind the page content. */
+body {
+  background: transparent;
+  color: var(--fg);
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
@@ -21,6 +47,61 @@ html, body {
 
 .drift {
   animation: drift 6s ease-in-out infinite;
+}
+
+/* moving sheen that sweeps across the audit progress bar */
+@keyframes progress-sheen {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.animate-progress-sheen {
+  animation: progress-sheen 1.4s linear infinite;
+}
+
+/* full-bleed pirate-ship video behind the loading state */
+.loading-video {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;
+}
+
+/* Light readability vignette over the video: the centre stays clear so the
+   ship is plainly visible, edges fade just enough for text contrast. */
+.loading-video-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    ellipse at 50% 42%,
+    transparent 0%,
+    color-mix(in srgb, var(--bg) 18%, transparent) 55%,
+    color-mix(in srgb, var(--bg) 55%, transparent) 100%
+  );
+}
+
+/* cinematic cover image behind the landing hero — kept muted so it sets the
+   mood without competing with the headline, input and buttons */
+.landing-cover {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background: url('/pirate-cover.jpg') center / cover no-repeat;
+  filter: brightness(0.72) saturate(0.95);
+}
+
+.landing-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(to bottom,
+      rgba(4, 7, 14, 0.5) 0%,
+      rgba(4, 7, 14, 0.66) 55%,
+      rgba(4, 7, 14, 0.88) 100%);
 }
 
 .scanline-mask {

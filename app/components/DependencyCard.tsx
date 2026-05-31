@@ -6,14 +6,14 @@ const RISK_STYLES: Record<ScoredDependency['risk'], string> = {
   danger:  'border-risk-danger/40  bg-risk-danger/5  hover:bg-risk-danger/10',
   watch:   'border-risk-watch/40   bg-risk-watch/5   hover:bg-risk-watch/10',
   healthy: 'border-risk-healthy/30 bg-risk-healthy/5 hover:bg-risk-healthy/10',
-  unknown: 'border-zinc-800 bg-zinc-900/40 hover:bg-zinc-900/60',
+  unknown: 'border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-strong)]',
 };
 
 const RISK_TEXT: Record<ScoredDependency['risk'], string> = {
   danger:  'text-risk-danger',
   watch:   'text-risk-watch',
   healthy: 'text-risk-healthy',
-  unknown: 'text-zinc-400',
+  unknown: 'text-[var(--fg-2)]',
 };
 
 export function DependencyCard({
@@ -29,13 +29,13 @@ export function DependencyCard({
       className={`w-full rounded-lg border p-3 text-left transition ${RISK_STYLES[dep.risk]}`}
     >
       <div className="flex items-baseline justify-between gap-2">
-        <div className="truncate font-mono text-sm font-medium text-zinc-100">
+        <div className="truncate font-mono text-sm font-medium text-[var(--fg)]">
           {dep.package_name}
         </div>
-        <div className="shrink-0 font-mono text-xs text-zinc-500">
+        <div className="shrink-0 font-mono text-xs text-[var(--fg-3)]">
           {dep.declared_range}
           {dep.latest_version && dep.latest_version !== dep.declared_range && (
-            <> → <span className="text-zinc-400">{dep.latest_version}</span></>
+            <> → <span className="text-[var(--fg-2)]">{dep.latest_version}</span></>
           )}
         </div>
       </div>

@@ -7,8 +7,8 @@ const SEVERITY_STYLE: Record<string, string> = {
   CRITICAL: 'bg-risk-danger/30 text-risk-danger',
   HIGH:     'bg-risk-danger/20 text-risk-danger',
   MODERATE: 'bg-risk-watch/20  text-risk-watch',
-  LOW:      'bg-zinc-700/40    text-zinc-300',
-  UNKNOWN:  'bg-zinc-800/60    text-zinc-400',
+  LOW:      'bg-[var(--skeleton)]   text-[var(--fg-2)]',
+  UNKNOWN:  'bg-[var(--skeleton-2)] text-[var(--fg-2)]',
 };
 
 export function RiskDrillDown({
@@ -31,23 +31,23 @@ export function RiskDrillDown({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-4 sm:items-center"
+      className="fixed inset-0 z-50 flex items-end justify-center bg-[var(--overlay)] p-4 sm:items-center"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl"
+        className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-6 shadow-2xl"
       >
         <header className="mb-4 flex items-start justify-between gap-3">
           <div>
-            <h2 className="font-mono text-xl text-zinc-100">{dep.package_name}</h2>
-            <p className="mt-1 text-sm text-zinc-500">
+            <h2 className="font-mono text-xl text-[var(--fg)]">{dep.package_name}</h2>
+            <p className="mt-1 text-sm text-[var(--fg-3)]">
               {dep.declared_range} → {dep.latest_version ?? 'unknown'}
               {dep.license && <> · {dep.license}</>}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="rounded-md border border-zinc-800 px-2 py-1 text-xs text-zinc-400 hover:bg-zinc-900"
+            className="rounded-md border border-[var(--border)] px-2 py-1 text-xs text-[var(--fg-2)] hover:bg-[var(--surface)]"
           >
             esc
           </button>
@@ -56,37 +56,37 @@ export function RiskDrillDown({
         <p className={`mb-5 text-sm ${
           dep.risk === 'danger'  ? 'text-risk-danger'  :
           dep.risk === 'watch'   ? 'text-risk-watch'   :
-          dep.risk === 'healthy' ? 'text-risk-healthy' : 'text-zinc-400'
+          dep.risk === 'healthy' ? 'text-risk-healthy' : 'text-[var(--fg-2)]'
         }`}>
           {dep.headline}
         </p>
 
         <section className="mb-6">
-          <h3 className="mb-2 text-xs uppercase tracking-wider text-zinc-500">Signals</h3>
-          <ul className="space-y-1 text-sm text-zinc-300">
+          <h3 className="mb-2 text-xs uppercase tracking-wider text-[var(--fg-3)]">Signals</h3>
+          <ul className="space-y-1 text-sm text-[var(--fg-2)]">
             {dep.signals.length === 0
-              ? <li className="text-zinc-500">No notable signals.</li>
+              ? <li className="text-[var(--fg-3)]">No notable signals.</li>
               : dep.signals.map((s, i) => <li key={i}>· {s}</li>)}
           </ul>
         </section>
 
         {dep.cve_list.length > 0 && (
           <section className="mb-6">
-            <h3 className="mb-2 text-xs uppercase tracking-wider text-zinc-500">
+            <h3 className="mb-2 text-xs uppercase tracking-wider text-[var(--fg-3)]">
               Vulnerabilities ({dep.cve_list.length})
             </h3>
             <ul className="space-y-2">
               {dep.cve_list.map((cve) => (
                 <li
                   key={cve.id}
-                  className="rounded-md border border-zinc-800 bg-zinc-900/40 p-3"
+                  className="rounded-md border border-[var(--border)] bg-[var(--surface)] p-3"
                 >
                   <div className="flex items-baseline justify-between gap-2">
                     <a
                       href={`https://osv.dev/vulnerability/${cve.id}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="font-mono text-sm text-zinc-100 underline-offset-2 hover:underline"
+                      className="font-mono text-sm text-[var(--fg)] underline-offset-2 hover:underline"
                     >
                       {cve.id}
                     </a>
@@ -99,7 +99,7 @@ export function RiskDrillDown({
                     </span>
                   </div>
                   {cve.summary && (
-                    <p className="mt-1 text-xs text-zinc-400">{cve.summary}</p>
+                    <p className="mt-1 text-xs text-[var(--fg-2)]">{cve.summary}</p>
                   )}
                 </li>
               ))}
@@ -107,7 +107,7 @@ export function RiskDrillDown({
           </section>
         )}
 
-        <section className="grid grid-cols-2 gap-4 text-sm text-zinc-300">
+        <section className="grid grid-cols-2 gap-4 text-sm text-[var(--fg-2)]">
           <Detail
             label="Last npm publish"
             value={fmtDays(dep.days_since_last_publish, dep.last_publish_at)}
@@ -130,7 +130,7 @@ export function RiskDrillDown({
           <Detail label="Open issues"  value={dep.open_issues_count?.toLocaleString() ?? '—'} />
         </section>
 
-        <footer className="mt-6 flex items-center gap-3 border-t border-zinc-900 pt-4 text-xs text-zinc-500">
+        <footer className="mt-6 flex items-center gap-3 border-t border-[var(--border)] pt-4 text-xs text-[var(--fg-3)]">
           {repoUrl && (
             <a href={repoUrl} target="_blank" rel="noreferrer" className="hover:text-coral-400">
               GitHub →
@@ -161,8 +161,8 @@ export function RiskDrillDown({
 function Detail({ label, value }: { label: string; value: string | number }) {
   return (
     <div>
-      <div className="text-xs uppercase tracking-wider text-zinc-500">{label}</div>
-      <div className="mt-0.5 font-mono text-sm text-zinc-200">{value}</div>
+      <div className="text-xs uppercase tracking-wider text-[var(--fg-3)]">{label}</div>
+      <div className="mt-0.5 font-mono text-sm text-[var(--fg)]">{value}</div>
     </div>
   );
 }
